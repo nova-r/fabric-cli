@@ -1,50 +1,27 @@
 {
-  description = "CLI for fabric";
-  outputs = { self, nixpkgs }:
-    let
-      supportedSystems = [
-        "aarch64-linux"
-        "aarch64-darwin"
-        "i686-linux"
-        "riscv64-linux"
-        "x86_64-linux"
-        "x86_64-darwin"
-      ];
-      forAllSystems = nixpkgs.lib.genAttrs supportedSystems;
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; });
-    in
-    {
-      packages = forAllSystems (system:
-        let
-          pkgs = nixpkgsFor.${system};
-        in
-        {
-          default = pkgs.stdenv.mkDerivation rec {
-            name = "fabric-cli";
-            src = self;
-            outputs = [ "out" ];
+  description = ''
+    next-gen framework for building desktop widgets using Python
+    (check the rewrite branch for progress)
+  '';
 
-            nativeBuildInputs = with pkgs; [ meson ninja pkg-config ];
-            buildInputs = with pkgs; [ ];
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    utils.url = "github:numtide/flake-utils";
+  };
 
-            enableParallelBuilding = true;
-
-            phases = ["installPhase"];
-            installPhase = ''
-              mkdir -p $out/bin
-              cat > $out/bin/fabric-cli << EOF
-              #!/bin/sh
-              meson setup --buildtype=release --prefix=/usr build && sudo meson install -C build
-              EOF
-              chmod +x $out/bin/fabric-cli
-            '';
-            meta = with pkgs.lib; {
-              homepage = "https://wiki.ffpy.org/getting-started/client-and-cli/";
-              license = with licenses; [ gpl3Only ];
-              maintainers = [ "Kyu~" ];
-              mainProgram = "fabric-cli";
-            };
-          };
-        });
-    };
+  outputs = {
+    nixpkgs,
+    utils,
+    ...
+  }:
+    utils.lib.eachDefaultSystem (
+      system: let
+        pkgs = nixpkgs.legacyPackages.${system};
+      in {
+        formatter = pkgs.nixfmt-rfc-style;
+        packages = {
+          default = pkgs.callPackage ./fabric-cli.nix {};
+        };
+      }
+    );
 }
