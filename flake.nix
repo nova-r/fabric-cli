@@ -22,7 +22,7 @@
           default = pkgs.stdenv.mkDerivation rec {
             name = "fabric-cli";
             src = self;
-            outputs = [ "out" "dev" ];
+            outputs = [ "out" ];
 
             nativeBuildInputs = with pkgs; [ meson ninja pkg-config ];
             buildInputs = with pkgs; [ ];
@@ -44,25 +44,6 @@
               maintainers = [ "Kyu~" ];
               mainProgram = "fabric-cli";
             };
-          };
-        });
-
-      devShells = forAllSystems (system:
-        let
-          pkgs = nixpkgsFor.${system};
-        in
-        {
-          default = pkgs.mkShell {
-            buildInputs = with pkgs; [
-              meson
-              ninja
-              pkg-config
-            ];
-
-            # shellHooks = ''
-            #   # export PATH="$PWD/node_modules/.bin/:$PATH"
-            #   alias run="meson setup --buildtype=release --prefix=/usr build && sudo meson install -C build"
-            # '';
           };
         });
     };
