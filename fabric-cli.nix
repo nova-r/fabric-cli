@@ -3,11 +3,8 @@
   ninja,
   go,
   stdenv,
-  extraBuildInputs ? [],
+  extraBuildInputs ? []
 }:
-let
-  python = "bll";
-in
   stdenv.mkDerivation {
     name = "fabric-cli";
     propagatedBuildInputs =
@@ -24,9 +21,12 @@ in
       # #!/bin/sh
       # GI_TYPELIB_PATH=$GI_TYPELIB_PATH \
       # GDK_PIXBUF_MODULE_FILE="$GDK_PIXBUF_MODULE_FILE" \
-      # ${python.interpreter} "\$@"
+      # {python.interpreter} "\$@"
       # EOF
-      meson setup --buildtype=release --prefix=/usr build && sudo meson install -C build
+      echo $out
+      echo $src
+      echo $NIX_BUILD_TOP
+      ${meson}/bin/meson setup --buildtype=release --prefix=/usr $NIX_BUILD_TOP #&& sudo ${meson}/bin/meson install -C $out/build
     '';
     meta.mainProgram = "fabric-cli";
   }
