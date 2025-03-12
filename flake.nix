@@ -9,19 +9,14 @@
     utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = {
-    nixpkgs,
-    utils,
-    ...
-  }:
-    utils.lib.eachDefaultSystem (
-      system: let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in {
-        formatter = pkgs.nixfmt-rfc-style;
-        packages = {
-          default = pkgs.callPackage ./fabric-cli.nix {};
-        };
-      }
-    );
+  outputs = { self, nixpkgs, utils, ... }:
+    utils.lib.eachDefaultSystem (system: let
+      pkgs = nixpkgs.legacyPackages.${system};
+    in {
+      formatter = pkgs.nixfmt-rfc-style;
+      packages = {
+        fabric-cli = pkgs.callPackage ./fabric-cli.nix {};
+        default = self.packages.${system}.fabric-cli; # Default to fabric-cli
+      };
+    });
 }
