@@ -11,7 +11,7 @@
     src = fetchFromGitHub {
       owner = "HeyImKyu";
       repo = "fabric-cli";
-      rev = "ed7da8aeed726abb9cb0603efa83b693b91d3159";
+      rev = "8872d1d4f713567756b0f088c13957b27f038c29";
       hash = "sha256-NatSzI0vbUxwvrUQnTwKUan0mZYJpH6oyCRaEr0JCB0=";
     };
     propagatedBuildInputs =
@@ -39,12 +39,17 @@
       echo "eodebug ---------------"
 
       # Run meson setup
-      ${meson}/bin/meson setup $src $out/build --buildtype=release --prefix=$out 
+      ${meson}/bin/meson setup $src $out/build --buildtype=release --prefix=$out --sources_dir=$out --output_dir=$out/bin
+      # cd $src
+      echo "cwd: "
+      echo $(pwd)
+      cp $src/* $out -r
+      cd $out
       ${meson}/bin/meson install -C $out/build
       # echo $out
       # echo $src
       # echo $NIX_BUILD_TOP
-      # ${meson}/bin/meson setup --buildtype=release --prefix=/usr {src} #&& sudo {meson}/bin/meson install -C $out/build
+      # {meson}/bin/meson setup --buildtype=release --prefix=/usr {src} #&& sudo {meson}/bin/meson install -C $out/build
     '';
     meta.mainProgram = "fabric-cli";
   }

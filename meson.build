@@ -3,7 +3,9 @@ project('fabric-cli', version: '0.0.2', license: 'AGPL-3.0-or-later')
 # there's no official GoLang support in meson...
 go_cc = find_program('go', required: true)
 
-sources_dir = meson.current_source_dir()
+sources_dir = get_option('sources_dir') != '' ? get_option('sources_dir') : meson.current_source_dir()
+output_dir = get_option('output_dir') != '' ? get_option('output_dir') : ''
+
 autocompletions_dir = sources_dir / 'autocompletions'
 
 extra_cc_flags = []
@@ -17,8 +19,9 @@ cli_target = custom_target(
     build_always_stale: true,
     build_by_default: true,
     console: true,
-    install: false,
-    output: meson.project_name(),
+    install: true,
+    install_dir: get_option('bindir'),
+    output: output_dir + meson.project_name(),
     command: [go_cc, 'build', '-v'] + extra_cc_flags + ['-o', '@OUTPUT@', sources_dir]
 )
 
